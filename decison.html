@@ -1,285 +1,299 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Snowflake Data Engineering Decision Tree</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #F8F9FA;
-            color: #343A40;
-        }
-        .decision-container {
-            background-color: #FFFFFF;
-            border: 1px solid #DEE2E6;
-        }
-        .option-button {
-            background-color: #F8F9FA;
-            border: 1px solid #DEE2E6;
-            transition: all 0.2s ease-in-out;
-        }
-        .option-button:hover {
-            background-color: #E9ECEF;
-            border-color: #ADB5BD;
-            transform: translateY(-2px);
-        }
-        .recommendation-box {
-            background-color: #E3F2FD;
-            border-left: 4px solid #2196F3;
-        }
-        .path-item {
-            background-color: #F1F3F5;
-            border: 1px solid #DEE2E6;
-        }
-        .path-arrow {
-            color: #ADB5BD;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Snowflake Decision Tree Wizard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2rem;
+      max-width: 800px;
+      line-height: 1.5;
+    }
+    .step {
+      display: none;
+    }
+    .step.active {
+      display: block;
+    }
+    .buttons {
+      margin-top: 1rem;
+    }
+    .buttons button {
+      padding: 0.5rem 1rem;
+      margin-right: 1rem;
+      cursor: pointer;
+    }
+    .result {
+      background: #f3f3f3;
+      padding: 1rem;
+      margin-top: 2rem;
+      border-radius: 5px;
+    }
+    .hidden {
+      display: none;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+  </style>
 </head>
-<body class="antialiased">
+<body>
 
-    <header class="bg-white py-5 shadow-sm">
-        <div class="container mx-auto px-6 text-center">
-            <h1 class="text-3xl font-bold text-[#2196F3]">Interactive Snowflake Decision Tree</h1>
-            <p class="text-md text-gray-600 mt-1">Navigate your data engineering choices with ease.</p>
-        </div>
-    </header>
+<h1>Snowflake Decision Tree Wizard</h1>
 
-    <main class="container mx-auto p-4 md:p-8">
-        <div class="decision-container max-w-2xl mx-auto p-6 md:p-8 rounded-lg shadow-lg">
-            
-            <div id="path-container" class="flex flex-wrap items-center gap-2 mb-6">
-                <!-- User's path will be rendered here -->
-            </div>
+<form id="wizardForm">
+  <div class="step active">
+    <label>1. Real-Time Requirement?</label>
+    <select name="realTime">
+      <option value="">Select</option>
+      <option value="streaming">Streaming</option>
+      <option value="batch">Batch</option>
+      <option value="none">None</option>
+    </select>
+  </div>
 
-            <div id="question-container" class="mb-6">
-                <h2 id="question-text" class="text-xl md:text-2xl font-bold text-gray-800 text-center"></h2>
-            </div>
+  <div class="step">
+    <label>2. Files per Day?</label>
+    <input type="number" name="filesPerDay" min="0" />
+  </div>
 
-            <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <!-- Options will be rendered here -->
-            </div>
+  <div class="step">
+    <label>3. Consistent Workload?</label>
+    <select name="consistentWorkload">
+      <option value="">Select</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+  </div>
 
-            <div id="recommendation-container" class="hidden mt-6">
-                <div id="recommendation-box" class="recommendation-box p-5 rounded-md">
-                    <h3 class="font-bold text-lg text-[#1E88E5]">Recommendation:</h3>
-                    <p id="recommendation-text" class="mt-2"></p>
-                    <p id="recommendation-details" class="text-sm mt-2 text-gray-600"></p>
-                </div>
-            </div>
+  <div class="step">
+    <label>4. Can Source Schema Change or Require Raw?</label>
+    <select name="schemaChange">
+      <option value="">Select</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+  </div>
 
-            <div class="text-center mt-8">
-                <button id="restart-button" class="text-sm font-semibold text-gray-500 hover:text-gray-800 transition-colors">Start Over</button>
-            </div>
-        </div>
-    </main>
+  <div class="step">
+    <label>5. File Format?</label>
+    <select name="fileFormat">
+      <option value="">Select</option>
+      <option value="semi">Semi-structured (JSON, Parquet, etc.)</option>
+      <option value="flat">Flat (CSV, TSV)</option>
+    </select>
+  </div>
 
-    <footer class="text-center py-6 mt-8 border-t border-gray-200">
-        <p class="text-gray-500 text-sm">Based on the Snowflake Data Engineering Decision Tree v2.0 by Nick Akincilar.</p>
-    </footer>
+  <div class="step">
+    <label>6. Incremental Updates?</label>
+    <select name="incremental">
+      <option value="">Select</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+  </div>
 
-    <!--
-    Chosen Palette: Minimalist Blue & Gray (#F8F9FA, #FFFFFF, #2196F3, #343A40).
-    Application Structure Plan: The application is a single-view, step-by-step wizard. This structure is ideal for a decision tree as it simplifies a complex flowchart into a linear, manageable user journey. It prevents overwhelming the user with the entire diagram at once. The state is managed by a simple JS object representing the tree, and the UI dynamically updates to reflect the user's current position. A "path" breadcrumb trail is included to give users context of their choices.
-    Visualization & Content Choices:
-    - Decision Tree Logic: Goal: Organize/Guide. Method: Interactive Wizard (JS Logic). Justification: This is the most user-friendly way to represent a complex flowchart, breaking it down into single questions and clear choices. No complex visualizations are needed. NO SVG/Mermaid.
-    - User Path: Goal: Inform/Orient. Method: Dynamic Breadcrumbs (HTML/JS). Justification: Provides context and allows the user to see the path they have taken, which is crucial for understanding how they reached a recommendation. NO SVG.
-    - Questions/Options: Goal: Interact. Method: Dynamic Text & Buttons (HTML/JS). Justification: Clear, large text for questions and distinct buttons for options make the core interaction simple and error-free.
-    - Recommendations: Goal: Inform. Method: Styled Text Box (HTML/CSS). Justification: A visually distinct "recommendation" box clearly signals the end of a path and provides the final answer in an easy-to-read format.
-    CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
-    -->
+  <div class="step">
+    <label>7. Requires Complex Functions?</label>
+    <select name="complexFunctions">
+      <option value="">Select</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+  </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const decisionTree = {
-                start: {
-                    question: "What is your primary goal?",
-                    options: {
-                        "Ingest Data": "ingestData",
-                        "Transform Data": "transformData",
-                        "Secure Data": "secureData"
-                    }
-                },
-                ingestData: {
-                    question: "What is the source of your data?",
-                    options: {
-                        "Files in Cloud Storage (S3, GCS, Azure)": "ingestSourceCloud",
-                        "Kafka / Streaming Source": "ingestSourceKafka",
-                        "Another Database / SaaS App": "ingestSourceDb"
-                    }
-                },
-                ingestSourceCloud: {
-                    question: "Do you need to query the data directly in the external location without ingestion?",
-                    options: {
-                        "Yes, query in place": {
-                            recommendation: "Use External Tables or Iceberg Tables.",
-                            details: "External tables are ideal for querying data in your data lake without moving it. Iceberg tables provide asset-management features like time travel and schema evolution directly on your object storage."
-                        },
-                        "No, copy data into Snowflake": "copyData"
-                    }
-                },
-                copyData: {
-                    question: "How will you load the data?",
-                    options: {
-                        "Continuously & Automatically (micro-batches)": {
-                            recommendation: "Use Snowpipe.",
-                            details: "Snowpipe is Snowflake's continuous data ingestion service. It's serverless and automatically loads new files as they arrive in your stage."
-                        },
-                        "In Bulk / On a Schedule": {
-                            recommendation: "Use the COPY command.",
-                            details: "The COPY INTO <table> command is perfect for bulk loading data from staged files. You can run it manually or as part of a scheduled task."
-                        }
-                    }
-                },
-                ingestSourceKafka: {
-                    recommendation: "Use the Snowflake Connector for Kafka.",
-                    details: "This connector subscribes to Kafka topics and streams the data directly into Snowflake tables, enabling near real-time analytics."
-                },
-                ingestSourceDb: {
-                    recommendation: "Use a 3rd Party ETL/ELT Tool.",
-                    details: "Leverage partners like Fivetran, Stitch, or Matillion to easily replicate data from various databases and SaaS applications into Snowflake."
-                },
-                transformData: {
-                    question: "How do you want to trigger your transformations?",
-                    options: {
-                        "On a fixed schedule": "transformSchedule",
-                        "When new data arrives (Streams)": "transformStreams"
-                    }
-                },
-                transformSchedule: {
-                    question: "What is your preferred method for writing transformation logic?",
-                    options: {
-                        "SQL": {
-                            recommendation: "Use Tasks.",
-                            details: "Snowflake Tasks allow you to execute SQL statements (including calls to Stored Procedures) on a defined schedule. You can build complex DAGs of tasks."
-                        },
-                        "Python, Java, or Scala": {
-                            recommendation: "Use an External Orchestrator.",
-                            details: "Tools like Airflow, Prefect, or Dagster can orchestrate complex, multi-language data pipelines that interact with Snowflake."
-                        }
-                    }
-                },
-                transformStreams: {
-                    question: "What kind of changes do you need to capture?",
-                    options: {
-                        "Only new rows (Append-only)": {
-                            recommendation: "Use Streams on Tables/Views.",
-                            details: "A stream object captures inserts on a source object. Combine with a Task to process these new records periodically."
-                        },
-                        "Inserts, Updates, and Deletes (CDC)": {
-                            recommendation: "Use Streams on Tables with Change Tracking.",
-                            details: "Streams provide robust Change Data Capture (CDC). They record the delta of changes, allowing you to reliably replicate changes to a target table."
-                        }
-                    }
-                },
-                secureData: {
-                    question: "What type of data protection do you need?",
-                    options: {
-                        "Discover and classify sensitive data": {
-                            recommendation: "Use Automatic Data Classification.",
-                            details: "Snowflake can automatically scan your columns and tag them with system-defined tags (e.g., PII, SENSITIVE), simplifying governance."
-                        },
-                        "Mask data for certain roles": {
-                            recommendation: "Apply Dynamic Data Masking.",
-                            details: "Create masking policies to redact or anonymize data at query time based on the user's role, without changing the underlying stored data."
-                        },
-                        "Restrict access to certain rows": {
-                            recommendation: "Apply Row-Access Policies.",
-                            details: "Implement row-level security to ensure users can only see the rows of data they are authorized to access, based on flexible policy conditions."
-                        }
-                    }
-                }
-            };
+  <div class="step">
+    <label>8. Requires External APIs?</label>
+    <select name="externalApis">
+      <option value="">Select</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+  </div>
 
-            const questionTextEl = document.getElementById('question-text');
-            const optionsContainerEl = document.getElementById('options-container');
-            const recommendationContainerEl = document.getElementById('recommendation-container');
-            const recommendationTextEl = document.getElementById('recommendation-text');
-            const recommendationDetailsEl = document.getElementById('recommendation-details');
-            const restartButton = document.getElementById('restart-button');
-            const pathContainerEl = document.getElementById('path-container');
+  <div class="step">
+    <label>9. Big Data? (&gt;1TB table)</label>
+    <select name="bigData">
+      <option value="">Select</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+  </div>
 
-            let currentStep = 'start';
-            let userPath = [];
+  <div class="step">
+    <label>10. Low Latency Spot Lookup?</label>
+    <select name="lowLatency">
+      <option value="">Select</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+  </div>
 
-            function renderStep(stepId) {
-                const step = decisionTree[stepId];
-                
-                if (!step) {
-                    console.error("Step not found:", stepId);
-                    return;
-                }
+  <div class="step">
+    <label>11. Has PII Data?</label>
+    <select name="pii">
+      <option value="">Select</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+      <option value="idk">I don't know</option>
+    </select>
+  </div>
 
-                if (step.question) {
-                    questionTextEl.textContent = step.question;
-                    optionsContainerEl.innerHTML = '';
-                    recommendationContainerEl.classList.add('hidden');
-                    optionsContainerEl.classList.remove('hidden');
+  <div class="step">
+    <label>12. PII Used for Analytics?</label>
+    <select name="piiAnalytics">
+      <option value="">Select</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+  </div>
 
-                    for (const optionText in step.options) {
-                        const button = document.createElement('button');
-                        button.textContent = optionText;
-                        button.className = 'option-button w-full text-left p-4 rounded-lg font-semibold';
-                        button.onclick = () => handleOptionClick(optionText, step.options[optionText]);
-                        optionsContainerEl.appendChild(button);
-                    }
-                } else if (step.recommendation) {
-                    renderRecommendation(step);
-                }
-            }
+  <div class="step">
+    <label>13. Data From 3rd Party?</label>
+    <select name="thirdParty">
+      <option value="">Select</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+  </div>
 
-            function handleOptionClick(optionText, nextStep) {
-                userPath.push(optionText);
-                updatePathUI();
+  <div class="step">
+    <label>14. 3rd Party Uses Snowflake?</label>
+    <select name="thirdPartySnowflake">
+      <option value="">Select</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+  </div>
 
-                if (typeof nextStep === 'string') {
-                    currentStep = nextStep;
-                    renderStep(currentStep);
-                } else if (typeof nextStep === 'object' && nextStep.recommendation) {
-                    renderRecommendation(nextStep);
-                }
-            }
+  <div class="step">
+    <label>15. Already in Snowflake?</label>
+    <select name="alreadyInSnowflake">
+      <option value="">Select</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+  </div>
 
-            function renderRecommendation(recommendation) {
-                questionTextEl.textContent = 'Decision Complete!';
-                optionsContainerEl.classList.add('hidden');
-                recommendationContainerEl.classList.remove('hidden');
-                recommendationTextEl.textContent = recommendation.recommendation;
-                recommendationDetailsEl.textContent = recommendation.details || '';
-            }
+  <div class="step">
+    <label>16. Transactional Use Case?</label>
+    <select name="transactional">
+      <option value="">Select</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+  </div>
 
-            function updatePathUI() {
-                pathContainerEl.innerHTML = '';
-                userPath.forEach((path, index) => {
-                    const pathEl = document.createElement('div');
-                    pathEl.textContent = path;
-                    pathEl.className = 'path-item text-xs font-medium py-1 px-3 rounded-full';
-                    pathContainerEl.appendChild(pathEl);
+  <div class="step">
+    <label>17. Data Stored Externally?</label>
+    <select name="externalStorage">
+      <option value="">Select</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+  </div>
 
-                    if (index < userPath.length - 1) {
-                        const arrowEl = document.createElement('div');
-                        arrowEl.textContent = '→';
-                        arrowEl.className = 'path-arrow font-bold';
-                        pathContainerEl.appendChild(arrowEl);
-                    }
-                });
-            }
+  <div class="step">
+    <label>18. Auto Incremental Updates Required?</label>
+    <select name="autoIncrement">
+      <option value="">Select</option>
+      <option value="yes">Yes</option>
+      <option value="no">No</option>
+    </select>
+  </div>
 
-            function restart() {
-                currentStep = 'start';
-                userPath = [];
-                updatePathUI();
-                renderStep(currentStep);
-            }
+  <div class="buttons">
+    <button type="button" id="prevBtn">Previous</button>
+    <button type="button" id="nextBtn">Next</button>
+    <button type="submit" id="submitBtn" class="hidden">Finish</button>
+  </div>
+</form>
 
-            restartButton.addEventListener('click', restart);
+<div class="result hidden" id="resultContainer">
+  <h2>Recommended Actions</h2>
+  <pre id="results"></pre>
+</div>
 
-            renderStep(currentStep);
-        });
-    </script>
+<script>
+  const steps = document.querySelectorAll('.step');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  const form = document.getElementById('wizardForm');
+  const results = document.getElementById('results');
+  const resultContainer = document.getElementById('resultContainer');
+  let currentStep = 0;
+
+  function showStep(index) {
+    steps.forEach((step, i) => {
+      step.classList.toggle('active', i === index);
+    });
+    prevBtn.disabled = index === 0;
+    nextBtn.classList.toggle('hidden', index === steps.length - 1);
+    submitBtn.classList.toggle('hidden', index !== steps.length - 1);
+  }
+
+  nextBtn.onclick = () => {
+    if (currentStep < steps.length - 1) {
+      currentStep++;
+      showStep(currentStep);
+    }
+  };
+
+  prevBtn.onclick = () => {
+    if (currentStep > 0) {
+      currentStep--;
+      showStep(currentStep);
+    }
+  };
+
+  form.onsubmit = (e) => {
+    e.preventDefault();
+    const formData = Object.fromEntries(new FormData(form).entries());
+    let output = [];
+
+    output.push(`Ingestion Method: ${
+      formData.realTime === "streaming" ? 
+        (parseInt(formData.filesPerDay) < 400000 ? "Snowpipe" : "Kafka Connector") :
+      formData.realTime === "batch" ? "COPY INTO (Warehouse)" : "Snowpipe Streaming or Dynamic Tables"
+    }`);
+
+    output.push(`Workload Type: ${formData.consistentWorkload === "yes" ? "Standard Task" : "Serverless Task"}`);
+    output.push(`Raw Handling: ${formData.schemaChange === "yes" || formData.fileFormat === "semi" ? "RAW table as VARIANT" : "Staging Table"}`);
+    output.push(`Transformation: ${formData.incremental === "yes" ? "STREAMS & TASKS" : "Full Rewrites"}`);
+    output.push(`Function Logic: ${
+      formData.externalApis === "yes" ? "External Functions" :
+      formData.complexFunctions === "yes" ? "Java/Python UDFs" : "ANSI-SQL"
+    }`);
+    if (formData.bigData === "yes") output.push("Tip: Use Clustering Keys / Materialized Views");
+    if (formData.lowLatency === "yes") output.push("Tip: Enable Search Optimization");
+
+    if (formData.pii === "yes") {
+      output.push(formData.piiAnalytics === "yes" ? "Use Data Anonymization" : "Create Data Masking Policies");
+    } else if (formData.pii === "idk") {
+      output.push("Use Tagging or Automatic Data Classification");
+    }
+
+    if (formData.thirdParty === "yes") {
+      output.push(formData.thirdPartySnowflake === "yes" ? "Use Live Data Share" : "Manual Integration");
+    }
+
+    output.push(`Data Status: ${formData.alreadyInSnowflake === "yes" ? "Already in Snowflake" : "Transform via SQL SELECT"}`);
+    output.push(`Storage Strategy: ${
+      formData.transactional === "yes" ? (formData.externalStorage === "yes" ? "External Iceberg Tables" : "Internal/UniStore Tables") : "Standard Tables"
+    }`);
+    output.push(`Incremental Sync: ${formData.autoIncrement === "yes" ? "Use automatic incremental updates" : "Use INSERT OVERWRITE or manual methods"}`);
+
+    results.textContent = output.join('\n');
+    resultContainer.classList.remove("hidden");
+    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+  };
+
+  showStep(currentStep);
+</script>
 
 </body>
 </html>
